@@ -111,16 +111,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Rest Framework
 
 REST_FRAMEWORK = {
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.ScopedRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'create': '10/day',
-    },
-    'PAGE_SIZE': 60,
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.TokenAuthentication',
+    # 'DEFAULT_THROTTLE_CLASSES': [
+    #     'rest_framework.throttling.ScopedRateThrottle',
     # ],
+    # 'DEFAULT_THROTTLE_RATES': {
+    #     'create': '10/day',
+    # },
+    # 'PAGE_SIZE': 60,
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+
     # 'DEFAULT_RENDERER_CLASSES': (
     #      'rest_framework.renderers.JSONRenderer',
     # ),
