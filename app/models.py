@@ -1,13 +1,10 @@
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, AbstractUser, PermissionsMixin
 from django.contrib.auth.models import User
-from rest_framework.authtoken import 
 from django.db import models
 from django.utils import timezone
 
 
-
-class Clinic(AbstractBaseUser):
+class Clinic(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)    
     name = models.CharField(max_length=128)
     address = models.TextField()
@@ -15,10 +12,14 @@ class Clinic(AbstractBaseUser):
     description = models.TextField()
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
+    groups = None
+    user_permissions = None
+
+    REQUIRED_FIELDS = [email]
 
     def __str__(self):
         return self.email
-    
+
 
 class Patient(models.Model):
     name = models.CharField(max_length=128, db_index=True)
