@@ -19,3 +19,4 @@ class PatientSerializer(serializers.ModelSerializer):
         model = Patient
         fields = ('name', 'phone')
 
+
