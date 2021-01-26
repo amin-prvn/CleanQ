@@ -1,8 +1,14 @@
 from functools import wraps
+from rest_framework import status
+from  rest_framework.response import Response
 import datetime
 import jwt
 import os
 
+
+from .models import Patient
+
+JWT_KEY = 'password'
 
 class Auth():
 
@@ -12,12 +18,12 @@ class Auth():
         payload = {
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
             'iat': datetime.datetime.utcnow(),
-            'id': user_id,
+            'id': id,
             'model': model
         }
         jwt_token = jwt.encode(
             payload,
-            'password', 
+            JWT_KEY, 
             'HS256'
         )
         return {
@@ -26,48 +32,42 @@ class Auth():
 
 
     @staticmethod
-    def auth_required(func):
-
-        @wraps(func)
-        def decorated_auth(request:Request, *args, **kwargs):
-
-            if 'token' not in request.headers:
-                return JSONResponse(
-                    content=jsonable_encoder({'error': 'Authentication token is not available, please login to get one'}),
-                    status_code=400,
-                    media_type="application/json"
-                )
-            token = request.headers.get('token')
-            data = Auth.decode_token(token)
-            if data['error']:
-                return JSONResponse(
-                    media_type="application/json",
-                    content=jsonable_encoder(data['error']),
-                    status_code=400
-                )
+    def auth_required(model):
+        def decorator(function):
+            def wrapper(*args, **kwargs):
+                request = args[1]
+                if 'token' not in request.headers:
+                    return Response(
+                        {'error': 'Authentication token is not available, please login to get one'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                token = request.headers.get('token')
+                data = Auth.decode_token(token)
+                if data['error']:
+                    return Response(
+                        data['error'],
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                token_id = kwargs['id'] = data['data']['id']
+                token_model = kwargs['model'] = data['data']['model']
+                return function(*args, **kwargs)
+            return wrapper
+        return decorator
                 
-            user_id = data['data']['user_id']
-            from .models import User
-            check_user = User.get_user(user_id)
-            if not check_user:
-                return JSONResponse(
-                    media_type="application/json",
-                    content=jsonable_encoder({'error': 'user does not exist, invalid token'}),
-                    status_code=400
-                )
-            request.state.user = user_id
-            return func(request, *args, **kwargs)
-        return decorated_auth
-  
+                
+                
+    
 
     @staticmethod
     def decode_token(token: str):
 
         re = {'data': {}, 'error': {}}
         try:
-            print(token)
-            payload = jwt.decode(jwt=token, key='amin123', algorithms='HS256')
-            re['data'] = {'user_id': payload['sub']}
+            payload = jwt.decode(jwt=token, key=JWT_KEY, algorithms='HS256')
+            re['data'] = {
+                'id': payload['id'],
+                'model': payload['model'] 
+            }
             return re
         except jwt.ExpiredSignatureError:
             re['error'] = {'message': 'token expired, please login again'}

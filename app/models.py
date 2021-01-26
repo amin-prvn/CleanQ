@@ -1,32 +1,41 @@
-from django.contrib.auth.models import AbstractBaseUser, AbstractUser, PermissionsMixin
-from django.contrib.auth.models import User
 from django.db import models
-from django.utils import timezone
+from django.contrib.auth.hashers import (
+    check_password, make_password,
+)
+from .manager import ClinicManager, PatientManager
 
 
-class Clinic(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(unique=True)    
+class BaseUser(models.Model):
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
-    address = models.TextField()
     phone = models.CharField(max_length=32)
-    description = models.TextField()
-    is_active = models.BooleanField(default=True)
-    date_joined = models.DateTimeField(default=timezone.now)
-    groups = None
-    user_permissions = None
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(auto_now=True)
 
-    REQUIRED_FIELDS = [email]
+class Clinic(BaseUser):
+    address = models.TextField()
+    description = models.TextField()
+    active = models.BooleanField(default=False)
+    objects = ClinicManager()
 
     def __str__(self):
         return self.email
 
+    def set_password(self):
+        self.password = make_password(self.password)
 
-class Patient(models.Model):
-    name = models.CharField(max_length=128, db_index=True)
-    phone = models.CharField(max_length=32)
+
+
+class Patient(BaseUser):
+    objects = PatientManager()
 
     def __str__(self):
-        return self.name
+        return self.email
+
+    def set_password(self):
+        self.password = make_password(self.password)
+
 
 
 class Reservation(models.Model):

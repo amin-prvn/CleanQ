@@ -8,7 +8,13 @@ class ClinicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Clinic
-        fields = ('name', 'address', 'phone', 'description')
+        fields = ('email', 'password', 'name', 'address', 'phone', 'description')
+
+    # def create(self, validated_data):
+    #     clinic = Clinic(**validated_data)
+    #     clinic.set_password()
+    #     clinic.save()
+    #     return clinic
 
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -17,6 +23,6 @@ class PatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ('name', 'phone')
+        fields = ('email', 'password', 'name', 'phone')
 
 
