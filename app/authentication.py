@@ -1,20 +1,16 @@
-from functools import wraps
 from rest_framework import status
 from  rest_framework.response import Response
 import datetime
 import jwt
 import os
 
-
-from .models import Patient
-
 JWT_KEY = 'password'
+
 
 class Auth():
 
     @staticmethod
     def generate_token(id, model):
-
         payload = {
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
             'iat': datetime.datetime.utcnow(),
@@ -29,7 +25,6 @@ class Auth():
         return {
             'token': str(jwt_token)
         }
-
 
     @staticmethod
     def auth_required(model):
@@ -50,13 +45,14 @@ class Auth():
                     )
                 token_id = kwargs['id'] = data['data']['id']
                 token_model = kwargs['model'] = data['data']['model']
+                if token_model != model:
+                    return Response(
+                        {'error': 'Authentication is not valid.'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
                 return function(*args, **kwargs)
             return wrapper
         return decorator
-                
-                
-                
-    
 
     @staticmethod
     def decode_token(token: str):
