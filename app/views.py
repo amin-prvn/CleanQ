@@ -37,6 +37,12 @@ class ClinicView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @Auth.auth_required('clinic')
+    def delete(self, request, *args, **kwargs):
+        clinic = Clinic.objects.get(pk=kwargs['id'])
+        clinic.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT) 
         
         
 class PatientView(APIView):
@@ -49,3 +55,18 @@ class PatientView(APIView):
             return Response(token, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @Auth.auth_required('patient')
+    def put(self, request, *args, **kwargs):
+        patient = Patient.objects.get(pk=kwargs['id'])
+        serializer = PatientSerializer(patient, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @Auth.auth_required('patient')
+    def delete(self, request, *args, **kwargs):
+        patient = Clinic.objects.get(pk=kwargs['id'])
+        patient.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT) 
+        

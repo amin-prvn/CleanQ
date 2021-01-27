@@ -44,7 +44,7 @@ class Auth():
                         status=status.HTTP_400_BAD_REQUEST
                     )
                 token_id = kwargs['id'] = data['data']['id']
-                token_model = kwargs['model'] = data['data']['model']
+                # token_model = kwargs['model'] = data['data']['model']
                 if token_model != model:
                     return Response(
                         {'error': 'Authentication is not valid.'},
