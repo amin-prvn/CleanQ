@@ -1,28 +1,44 @@
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import filters
+
 
 from .serializers import ClinicSerializer, PatientSerializer
 from .models import Clinic, Patient
 from .authentication import Auth
 
 
+class GetClinic(ListAPIView):
+    queryset = Clinic.objects.all()
+    serializer_class = ClinicSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name']
+    ordering_fields = ['name']
+
+
 class ClinicView(APIView):
 
-    def get(self, request):
-        queryset = Clinic.objects.filter(active=True)
-        serializer = ClinicSerializer(queryset, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
-    
     def post(self, request):
         serializer = ClinicSerializer(data = request.data)
         if serializer.is_valid():
-            clinic = Clinic.objects.create_clinic(**serializer.validated_data)
+            # clinic = Clinic.objects.create_clinic(**serializer.validated_data)
+            serializer.save()
             token = Auth.generate_token(clinic.id, 'clinic')
             return Response(token, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+    
+    @Auth.auth_required('clinic')
+    def put(self, request, *args, **kwargs):
+        clinic = Clinic.objects.get(pk=kwargs['id'])
+        serializer = ClinicSerializer(clinic, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
 class PatientView(APIView):
 
     def post(self, request):
@@ -33,12 +49,3 @@ class PatientView(APIView):
             return Response(token, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @Auth.auth_required('patient')
-    def get(self, request, *args, **kwargs):
-        print(kwargs)
-        return Response("ok")
-
-
-
-            
-        
