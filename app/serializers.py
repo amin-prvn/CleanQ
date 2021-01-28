@@ -3,6 +3,9 @@ from rest_framework import serializers
 from .models import Reservation, Clinic, Patient
 from .validators import phone_number
 
+# import pdb; pdb.set_trace()
+import  datetime
+START_TIME = datetime.time(hour=8)
 
 class ClinicSerializer(serializers.ModelSerializer):
 
@@ -21,14 +24,10 @@ class ClinicSerializer(serializers.ModelSerializer):
         return clinic
 
     def update(self, instance, validated_data):
-        instance.email = validated_data.get('email', instance.email)
-        if validated_data.get('password'):
-            instance.password = validated_data.get('password')
-            instance.set_password()
-        instance.name = validated_data.get('name', instance.name)
-        instance.address = validated_data.get('address', instance.address)
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.description = validated_data.get('description', instance.description)
+        for key, item in validated_data.items():
+            setattr(instance, key, item)
+            if key == 'password': 
+                instance.set_password()
         instance.save()
         return instance
 
@@ -52,13 +51,20 @@ class PatientSerializer(serializers.ModelSerializer):
         return patient
 
     def update(self, instance, validated_data):
-        instance.email = validated_data.get('email', instance.email)
-        if validated_data.get('password'):
-            instance.password = validated_data.get('password')
-            instance.set_password()
-        instance.name = validated_data.get('name', instance.name)
-        instance.phone = validated_data.get('phone', instance.phone)
+        for key, item in validated_data.items():
+            setattr(instance, key, item)
+            if key == 'password': 
+                instance.set_password()
         instance.save()
         return instance
 
 
+class ReservationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Reservation
+        fields = ('clinic', 'description')
+
+    def create(self, validated_data):
+
+        
