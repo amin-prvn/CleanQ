@@ -9,57 +9,6 @@ START_TIME = 10
 END_TIME = 20
 DELTA_TIME = 30
 
-class ClinicSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Clinic
-        fields = ('email', 'password', 'name', 'address', 'phone', 'description')
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'email': {'write_only': True},
-        }
-
-    def create(self, validated_data):
-        clinic = Clinic(**validated_data)
-        clinic.set_password()
-        clinic.save()
-        return clinic
-
-    def update(self, instance, validated_data):
-        for key, item in validated_data.items():
-            setattr(instance, key, item)
-            if key == 'password': 
-                instance.set_password()
-        instance.save()
-        return instance
-
-
-class PatientSerializer(serializers.ModelSerializer):
-
-    phone = serializers.CharField(validators=[phone_number])
-
-    class Meta:
-        model = Patient
-        fields = ('email', 'password', 'name', 'phone')
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'email': {'write_only': True},
-        }
-
-    def create(self, validated_data):
-        patient = Patient(**validated_data)
-        patient.set_password()
-        patient.save()
-        return patient
-
-    def update(self, instance, validated_data):
-        for key, item in validated_data.items():
-            setattr(instance, key, item)
-            if key == 'password': 
-                instance.set_password()
-        instance.save()
-        return instance
-
 
 class ReservationSerializer(serializers.ModelSerializer):
 
@@ -95,7 +44,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
                 if now.hour >= END_TIME:
                     time = tommorow(now)
-                
+
                 else:
                     time = before_or_after_delta(now)
 
@@ -107,7 +56,6 @@ class ReservationSerializer(serializers.ModelSerializer):
 
                 else:
                     time = before_or_after_delta(last_reservation.time)
-                    print(time)
     
             reservation = Reservation.objects.create(
                 patient=patient, 
@@ -115,20 +63,84 @@ class ReservationSerializer(serializers.ModelSerializer):
                 description=validated_data.get('description'), 
                 time=time
                 )
+
         except Reservation.DoesNotExist:
+
+            if now.hour >= END_TIME:
+                    time = tommorow(now)
+            else:
+                time = before_or_after_delta(now)
 
             reservation = Reservation.objects.create(
                 patient=patient, 
                 clinic=validated_data['clinic'],
                 description=validated_data.get('description'), 
-                time=datetime(
-                    year=now.year,
-                    month=now.month,
-                    day=now.day+1,
-                    hour=START_TIME
-                    )
+                time=time
                 )
         return reservation
+
+
+class ClinicSerializer(serializers.ModelSerializer):
+
+    reserved_patients = ReservationSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Clinic
+        fields = ('email', 'password', 'name', 'address', 'phone', 'description', 'reserved_patients')
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'email': {'write_only': True},
+        }
+
+    def create(self, validated_data):
+        clinic = Clinic(**validated_data)
+        clinic.set_password()
+        clinic.save()
+        return clinic
+
+    def update(self, instance, validated_data):
+        for key, item in validated_data.items():
+            setattr(instance, key, item)
+            if key == 'password': 
+                instance.set_password()
+        instance.save()
+        return instance
+
+
+class GetClinicSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Clinic
+        fields = ('name', 'address', 'phone', 'description',)
+
+
+class PatientSerializer(serializers.ModelSerializer):
+
+    phone = serializers.CharField(validators=[phone_number])
+    reserved_clinics = ReservationSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Patient
+        fields = ('email', 'password', 'name', 'phone', 'reserved_clinics')
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'email': {'write_only': True},
+        }
+
+    def create(self, validated_data):
+        patient = Patient(**validated_data)
+        patient.set_password()
+        patient.save()
+        return patient
+
+    def update(self, instance, validated_data):
+        for key, item in validated_data.items():
+            setattr(instance, key, item)
+            if key == 'password': 
+                instance.set_password()
+        instance.save()
+        return instance
+
 
 
 def before_or_after_delta(time):
@@ -136,7 +148,6 @@ def before_or_after_delta(time):
         print('after')
         time += timedelta(hours=1)
         return time.replace(minute=0, second=0, microsecond=0)
-
     else:
         print('before')
         return time.replace(minute=DELTA_TIME, second=0, microsecond=0)
