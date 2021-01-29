@@ -1,7 +1,6 @@
 from django.db import models
-from django.contrib.auth.hashers import (
-    check_password, make_password,
-)
+from django.contrib.auth.hashers import check_password, make_password
+
 from .manager import ClinicManager, PatientManager
 
 
@@ -12,6 +11,7 @@ class BaseUser(models.Model):
     phone = models.CharField(max_length=32)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
+
 
 class Clinic(BaseUser):
     address = models.TextField()
@@ -24,8 +24,7 @@ class Clinic(BaseUser):
 
     def set_password(self):
         self.password = make_password(self.password)
-
-
+        
 
 class Patient(BaseUser):
     objects = PatientManager()
@@ -37,12 +36,12 @@ class Patient(BaseUser):
         self.password = make_password(self.password)
 
 
-
 class Reservation(models.Model):
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    clinic = models.ForeignKey(Clinic, related_name='reserved_patients', on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, related_name='reserved_clinics', on_delete=models.CASCADE)
     time = models.DateTimeField()
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
+    date_reserved = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f" {self.clinic.name} | {self.patient.name} | {self.time} "
