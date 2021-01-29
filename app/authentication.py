@@ -1,14 +1,19 @@
-from rest_framework import status
 from  rest_framework.response import Response
+from rest_framework import status
 import datetime
 import jwt
 import os
+
 
 JWT_KEY = 'password'
 
 
 class Auth():
+    '''
+        Authentication class for create jwt token and verify it
+    '''
 
+    # Generate jwt token with user id and model = {clinic, patient}
     @staticmethod
     def generate_token(id, model):
         payload = {
@@ -26,6 +31,7 @@ class Auth():
             'token': str(jwt_token)
         }
 
+    # Authentication required decorator input_argument : model , return_argument : id, clinic
     @staticmethod
     def auth_required(model):
         def decorator(function):
@@ -44,7 +50,7 @@ class Auth():
                         status=status.HTTP_400_BAD_REQUEST
                     )
                 token_id = kwargs['id'] = data['data']['id']
-                # token_model = kwargs['model'] = data['data']['model']
+                token_model = kwargs['model'] = data['data']['model']
                 if token_model != model:
                     return Response(
                         {'error': 'Authentication is not valid.'},
@@ -54,6 +60,7 @@ class Auth():
             return wrapper
         return decorator
 
+    # Decode given token 
     @staticmethod
     def decode_token(token: str):
 
