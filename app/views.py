@@ -10,6 +10,9 @@ from .authentication import Auth
 
 
 class GetClinic(ListAPIView):
+    '''
+        Get all active clinics
+    '''
     queryset = Clinic.objects.filter(active=True)
     serializer_class = GetClinicSerializer
     filter_backends = [filters.SearchFilter]
@@ -17,13 +20,18 @@ class GetClinic(ListAPIView):
 
 
 class ClinicView(APIView):
+    '''
+        Clinic view class
+    '''
 
+    # Get clinic and it's reservations with token
     @Auth.auth_required('clinic')
     def get(self, request, *args, **kwargs):
         queryset = Clinic.objects.get(pk=kwargs['id'])
         serializer = ClinicSerializer(queryset)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    # Create clinic and get token response
     def post(self, request):
         serializer = ClinicSerializer(data = request.data)
         if serializer.is_valid():
@@ -32,6 +40,7 @@ class ClinicView(APIView):
             return Response(token, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    # Edit clinic with token authentication
     @Auth.auth_required('clinic')
     def put(self, request, *args, **kwargs):
         clinic = Clinic.objects.get(pk=kwargs['id'])
@@ -41,6 +50,7 @@ class ClinicView(APIView):
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # Delete clinic with token authentication
     @Auth.auth_required('clinic')
     def delete(self, request, *args, **kwargs):
         clinic = Clinic.objects.get(pk=kwargs['id'])
@@ -49,13 +59,18 @@ class ClinicView(APIView):
         
         
 class PatientView(APIView):
+    '''
+        Clinic view class
+    '''
 
+    # Get patient and it's reservations with token
     @Auth.auth_required('patient')
     def get(self, request, *args, **kwargs):
         queryset = Patient.objects.get(pk=kwargs['id'])
         serializer = PatientSerializer(queryset)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+    
+    # Create patient and get token response
     def post(self, request):
         serializer = PatientSerializer(data = request.data)
         if serializer.is_valid():
@@ -64,6 +79,7 @@ class PatientView(APIView):
             return Response(token, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # Edit patient with token authentication
     @Auth.auth_required('patient')
     def put(self, request, *args, **kwargs):
         patient = Patient.objects.get(pk=kwargs['id'])
@@ -72,7 +88,8 @@ class PatientView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
+    # Delete patient with token authentication
     @Auth.auth_required('patient')
     def delete(self, request, *args, **kwargs):
         patient = Clinic.objects.get(pk=kwargs['id'])
@@ -80,7 +97,11 @@ class PatientView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT) 
         
 class CreateReservation(APIView):
+    '''
+        Reservation view class
+    '''
 
+    # Create reservation for patient with patient's token 
     @Auth.auth_required('patient')
     def post(self, request, *args, **kwargs):
         serializer = ReservationSerializer(data = request.data)

@@ -1,16 +1,18 @@
 from rest_framework import serializers
+from  datetime import datetime, timedelta
 
 from .models import Reservation, Clinic, Patient
 from .validators import phone_number
 
-# import pdb; pdb.set_trace()
-from  datetime import datetime, timedelta
 START_TIME = 10
 END_TIME = 20
 DELTA_TIME = 30
 
 
 class ReservationSerializer(serializers.ModelSerializer):
+    '''
+        Reservation serializer class
+    '''
 
     class Meta:
         model = Reservation
@@ -31,7 +33,7 @@ class ReservationSerializer(serializers.ModelSerializer):
             if last_reservation.time.date() == now.date():
 
                 if last_reservation.time.hour >= END_TIME:
-                    time = tommorow(last_reservation.time)
+                    time = tomorrow(last_reservation.time)
 
                 elif last_reservation.time.hour >= now.hour:
                     time = before_or_after_delta(last_reservation.time)
@@ -43,7 +45,7 @@ class ReservationSerializer(serializers.ModelSerializer):
             elif last_reservation.time.date() < now.date():
 
                 if now.hour >= END_TIME:
-                    time = tommorow(now)
+                    time = tomorrow(now)
 
                 else:
                     time = before_or_after_delta(now)
@@ -52,7 +54,7 @@ class ReservationSerializer(serializers.ModelSerializer):
             elif last_reservation.time.date() > now.date():
 
                 if last_reservation.time.hour >= END_TIME:
-                    time = tommorow(last_reservation.time)
+                    time = tomorrow(last_reservation.time)
 
                 else:
                     time = before_or_after_delta(last_reservation.time)
@@ -67,7 +69,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         except Reservation.DoesNotExist:
 
             if now.hour >= END_TIME:
-                    time = tommorow(now)
+                    time = tomorrow(now)
             else:
                 time = before_or_after_delta(now)
 
@@ -81,6 +83,9 @@ class ReservationSerializer(serializers.ModelSerializer):
 
 
 class ClinicSerializer(serializers.ModelSerializer):
+    '''
+        Clinic Serializer class
+    '''
 
     reserved_patients = ReservationSerializer(many=True, read_only=True)
     
@@ -92,12 +97,14 @@ class ClinicSerializer(serializers.ModelSerializer):
             'email': {'write_only': True},
         }
 
+    # Create clinic and hashed password
     def create(self, validated_data):
         clinic = Clinic(**validated_data)
         clinic.set_password()
         clinic.save()
         return clinic
 
+    # Update clinic and hashed password
     def update(self, instance, validated_data):
         for key, item in validated_data.items():
             setattr(instance, key, item)
@@ -108,6 +115,9 @@ class ClinicSerializer(serializers.ModelSerializer):
 
 
 class GetClinicSerializer(serializers.ModelSerializer):
+    '''
+        Get only Clinic information Serializer class
+    '''
     
     class Meta:
         model = Clinic
@@ -115,6 +125,9 @@ class GetClinicSerializer(serializers.ModelSerializer):
 
 
 class PatientSerializer(serializers.ModelSerializer):
+    '''
+        Patient Serializer class
+    '''
 
     phone = serializers.CharField(validators=[phone_number])
     reserved_clinics = ReservationSerializer(many=True, read_only=True)
@@ -127,12 +140,14 @@ class PatientSerializer(serializers.ModelSerializer):
             'email': {'write_only': True},
         }
 
+    # Create patient and hashed password
     def create(self, validated_data):
         patient = Patient(**validated_data)
         patient.set_password()
         patient.save()
         return patient
-
+    
+    # Update patient and hashed password
     def update(self, instance, validated_data):
         for key, item in validated_data.items():
             setattr(instance, key, item)
@@ -142,7 +157,7 @@ class PatientSerializer(serializers.ModelSerializer):
         return instance
 
 
-
+# Check time is before or after static delta time?
 def before_or_after_delta(time):
     if time.minute >= DELTA_TIME :
         print('after')
@@ -152,8 +167,9 @@ def before_or_after_delta(time):
         print('before')
         return time.replace(minute=DELTA_TIME, second=0, microsecond=0)
 
-def tommorow(time):
-    print('tommorow')
+# Return tomorrow time if latest time is bigger or equal than end time of the day
+def tomorrow(time):
+    print('tomorrow')
     time += timedelta(days=1)
     return time.replace(hour=START_TIME, minute=0, second=0, microsecond=0)
     
