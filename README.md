@@ -1,5 +1,14 @@
 # CleanQ
  We all have to go to a clinic once in a while (hopefully, only for a routine checkup), and we all hate having to sit there waiting until it’s our turn. (not to mention now that we have a pandemic going on, waiting in a crowded place may be really dangerous!). So, once again we want to use technology to solve a problem! CleanQ (clearly a play on Clinic and a Clean Queue), aims to create a platform in which clinics can sign up to accept patients, and patients can make reservations on clinics.
+ 
+ ---
+## Api document
+- [Clinic Api Document]()
+- [Patient Api Document]()
+- [Reserve clinic  Api Document]()
+- [Get all clinic  Api Document]()
+---
+
 ## Installation
 
 1. Create virtualenv.
