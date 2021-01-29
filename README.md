@@ -7,7 +7,6 @@
 - [Patient Api Document](https://github.com/amin-prvn/CleanQ/blob/master/Api%20Document/Patient%20Api%20Document.md )
 - [Reserve clinic  Api Document](https://github.com/amin-prvn/CleanQ/blob/master/Api%20Document/Reserve%20clinic%20%20Api%20Document.md)
 - [Get all clinic  Api Document](https://github.com/amin-prvn/CleanQ/blob/master/Api%20Document/Get%20all%20clinic%20%20Api%20Document.md)
----
 
 ## Installation
 
@@ -35,8 +34,6 @@ python manage.py migrate
 ```
 python manage.py runserver 
 ```
-
----
 ## TODO list
 - [x] Standard Django admin panel, with access to all data
 - [x] Verifying signed up clinics for admin
