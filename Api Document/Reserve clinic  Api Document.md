@@ -1,8 +1,8 @@
 ## Reservation view
 1. Main url
-```
-localhost:8000/api/v1/reserve
-```
+
+    <localhost:8000/api/v1/reserve>
+
 2. Reserve a clinic for patient [POST]
 - Header :
 ```
@@ -14,6 +14,7 @@ token = JWT_token
     "clinic": id,
     "description": "description"
 }
+```
 - Response :    
 ```
 {

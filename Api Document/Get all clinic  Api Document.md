@@ -1,8 +1,8 @@
 ## GetClinic view
 1. Main url
-```
-localhost:8000/api/v1/get-clinics
-```
+
+    <localhost:8000/api/v1/get-clinics>
+
 2. Get all clinic list [GET]
 - Response :    
 ```

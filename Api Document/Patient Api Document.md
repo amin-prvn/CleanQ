@@ -1,8 +1,8 @@
 ## Patient view
 1. Main url
-```
-localhost:8000/api/v1/patient
-```
+
+    <localhost:8000/api/v1/patient>
+
 2. Get patient reservation list [GET]
 - Header :
 ```
@@ -11,13 +11,13 @@ token = JWT_token
 * Query parameters :
 
     - Order past reservation : 
-        ```
-        ?ordering=past
-        ```
+
+        <localhost:8000/api/v1/patient?ordering=past>
+        
     - Order upcoming reservation :
-        ```
-        ?ordering=upcoming
-        ```
+
+        <localhost:8000/api/v1/patient?ordering=upcoming>
+
 - Response :    
 ```
 [

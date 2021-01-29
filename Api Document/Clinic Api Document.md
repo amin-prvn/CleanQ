@@ -1,8 +1,8 @@
 ## Clinic view
 1. Main url
-```
-localhost:8000/api/v1/clinic
-```
+
+    <localhost:8000/api/v1/clinic>
+
 2. Get clinic reservation list [GET]
 - Header :
 ```
@@ -11,13 +11,12 @@ token = JWT_token
 * Query parameters :
 
     - Order past reservation : 
-        ```
-        ?ordering=past
-        ```
+
+        <localhost:8000/api/v1/clinic?ordering=past>
+        
     - Order upcoming reservation :
-        ```
-        ?ordering=upcoming
-        ```
+
+        <localhost:8000/api/v1/clinic?ordering=upcoming>
 - Response :    
 ```
 [
