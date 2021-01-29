@@ -4,8 +4,11 @@ from  datetime import datetime, timedelta
 from .models import Reservation, Clinic, Patient
 from .validators import phone_number
 
+# Static start hour of day for all reservations
 START_TIME = 10
+# Static end hour of day for all reservations
 END_TIME = 20
+# Static delta time for all reservations
 DELTA_TIME = 30
 
 
@@ -87,11 +90,9 @@ class ClinicSerializer(serializers.ModelSerializer):
         Clinic Serializer class
     '''
 
-    reserved_patients = ReservationSerializer(many=True, read_only=True)
-    
     class Meta:
         model = Clinic
-        fields = ('email', 'password', 'name', 'address', 'phone', 'description', 'reserved_patients')
+        fields = ('email', 'password', 'name', 'address', 'phone', 'description')
         extra_kwargs = {
             'password': {'write_only': True},
             'email': {'write_only': True},
@@ -114,27 +115,16 @@ class ClinicSerializer(serializers.ModelSerializer):
         return instance
 
 
-class GetClinicSerializer(serializers.ModelSerializer):
-    '''
-        Get only Clinic information Serializer class
-    '''
-    
-    class Meta:
-        model = Clinic
-        fields = ('name', 'address', 'phone', 'description',)
-
-
 class PatientSerializer(serializers.ModelSerializer):
     '''
         Patient Serializer class
     '''
 
     phone = serializers.CharField(validators=[phone_number])
-    reserved_clinics = ReservationSerializer(many=True, read_only=True)
 
     class Meta:
         model = Patient
-        fields = ('email', 'password', 'name', 'phone', 'reserved_clinics')
+        fields = ('email', 'password', 'name', 'phone')
         extra_kwargs = {
             'password': {'write_only': True},
             'email': {'write_only': True},
