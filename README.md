@@ -28,4 +28,17 @@ python manage.py runserver
 ```
 
 ---
+## TODO list
+- [x] Standard Django admin panel, with access to all data
+- [x] Verifying signed up clinics for admin
+- [x] Sign up for clinic
+- [x] Profile actions for clinic
+- [ ] Login for clinic
+- [x] Seeing a list of reservations (+filtering the past/upcoming reservations) for clinic
+- [x] Signup/login/profile actions for patient
+- [ ] Loginfor patient
+- [x] Seeing a list of clinics + search for patient 
+- [x] Seeing list of own reservations  (+filtering the past/upcoming reservations) for patient
+
+---
 Developed by Mohammad Amin Parvanian
