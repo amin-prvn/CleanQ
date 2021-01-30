@@ -44,6 +44,7 @@ python manage.py runserver
 - [ ] Loginfor patient
 - [x] Seeing a list of clinics + search for patient 
 - [x] Seeing list of own reservations  (+filtering the past/upcoming reservations) for patient
+- [ ] Check reservation day not to be weekend.
 
 ---
 Developed by Mohammad Amin Parvanian
