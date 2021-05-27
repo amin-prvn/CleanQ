@@ -28,7 +28,7 @@ class Auth():
             'HS256'
         )
         return {
-            'token': str(jwt_token)
+            'token': jwt_token
         }
 
     # Authentication required decorator input_argument : model , return_argument : id, clinic
