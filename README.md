@@ -47,4 +47,4 @@ python manage.py runserver
 - [ ] Check reservation day not to be weekend.
 
 ---
-Developed by Mohammad Amin Parvanian
+Developed by Mohammad Amin Parvanian & Zahra Abedi
