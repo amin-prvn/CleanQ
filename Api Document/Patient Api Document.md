@@ -35,7 +35,7 @@ token = JWT_token
     }
 ]
 ```
-3. Rreate patient [POST]
+3. Create patient [POST]
 - Body :
 ```
 {

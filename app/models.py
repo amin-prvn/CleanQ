@@ -46,6 +46,10 @@ class Reservation(models.Model):
     def __str__(self):
         return f" {self.clinic.name} | {self.patient.name} | {self.time} "
     
+class BackUp(models.Model):
+    file = models.FileField(upload_to="backup", null=True, blank=True)
 
+class Restore(models.Model):
+    path = models.CharField(max_length=1000)
 
 

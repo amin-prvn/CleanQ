@@ -37,12 +37,12 @@ class Auth():
         def decorator(function):
             def wrapper(*args, **kwargs):
                 request = args[1]
-                if 'token' not in request.headers:
+                if 'Authorization' not in request.headers:
                     return Response(
                         {'error': 'Authentication token is not available, please login to get one'},
                         status=status.HTTP_400_BAD_REQUEST
                     )
-                token = request.headers.get('token')
+                token = request.headers.get('Authorization')
                 data = Auth.decode_token(token)
                 if data['error']:
                     return Response(

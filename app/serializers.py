@@ -92,7 +92,7 @@ class ClinicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Clinic
-        fields = ('email', 'password', 'name', 'address', 'phone', 'description')
+        fields = ('id', 'email', 'password', 'name', 'address', 'phone', 'description')
         extra_kwargs = {
             'password': {'write_only': True},
             'email': {'write_only': True},
